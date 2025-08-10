@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>  
   <meta charset="UTF-8">
   <title>Advanced Workers Skill Sheet</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Add these Firebase scripts: -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
-
 <body>
+  <!-- Your page UI here -->
+  
+  <!-- Load your app logic after Firebase scripts -->
+
+
+
     <div id="topbar" style="position:fixed;top:16px;right:32px;z-index:12000;">
   <button id="loginBtn" style="background:linear-gradient(90deg,#497dfb 1%,#b583fd 98%);color:#fff;border:none;padding:7px 17px;border-radius:7px;font-weight:600;font-size:1em;cursor:pointer;box-shadow:0 1px 4px #7772;">Login</button>
   <span id="loginStatus" style="margin-left:12px;color:#25256b;font-weight:600;"></span>
@@ -164,30 +172,8 @@
 </div>
 
   </div> <!-- End .container -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDOpfGcOaV6SE3Z6hGrB8k_BNKcII6Psyg",
-    authDomain: "kmfworkers.firebaseapp.com",
-    projectId: "kmfworkers",
-    storageBucket: "kmfworkers.firebasestorage.app",
-    messagingSenderId: "345856300895",
-    appId: "1:345856300895:web:c0b07b90b45f86989b88ea",
-    measurementId: "G-M35E3DJD9V"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
   <script src="script.js"></script>
-  
+    <script src="app.js"></script></head>
 </body>
 </html>
