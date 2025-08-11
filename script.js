@@ -1,352 +1,184 @@
-// --- Workers Data Structure ---
-const MAX_WORKERS = 15;
-const AREAS = [
-  {
-    name: 'DPI',
-    skills: [
-      'Universal Granulation Machine',
-      'Capsule Filling Machine',
-      'Capsule Blister Machine',
-      'BPR',
-      'BMR',
-    ],
-    tableBodyId: 'dpi-skills-body'
-  },
-  {
-    name: 'MDI',
-    skills: [
-      '30L Vessel',
-      '100L Vessel',
-      'Canister Cleaning Machine',
-      'Canister Crimping Machine',
-      'Canister Filling Machine',
-      'BMR',
-      'Dispensing'
-    ],
-    tableBodyId: 'mdi-skills-body'
-  },
-  {
-    name: 'Packaging',
-    skills: [
-      'Conveyor Belt',
-      'Sachet Sealing Machine',
-      'Balance',
-      'BPR'
-    ],
-    tableBodyId: 'packaging-skills-body'
-  },
+import { 
+  auth, provider, onAuthStateChanged, signInWithPopup, signOut, 
+  db, ref, set, get, update, onValue 
+} from './firebase-init.js';
+
+// You can predefine admin emails like this, or store in the database later:
+const ADMIN_EMAILS = [
+  "your.admin@email.com"    // <--- Change to your admin email!
 ];
 
-// Load & Save to localStorage
-const STORAGE_KEY = 'workersSkillsData_v1';
+// --- DOM Elements ---
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const currentUserInfo = document.getElementById("currentUserInfo");
+const userPhoto = document.getElementById("userPhoto");
+const adminLoginPanel = document.getElementById("adminLoginPanel");
+const workerMgmt = document.getElementById("workerMgmt");
+const skillsSection = document.getElementById("skillsSection");
 
-// Utility: Save
-function saveWorkersDataToLocal(workers) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(workers));
-}
+// Track user/admin
+let currentUser = null;
+let isAdmin = false;
 
-// Utility: Load
-function loadWorkersDataFromLocal() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) return [];
-  try { return JSON.parse(data); }
-  catch { return []; }
-}
-
-// --- UI references ---
-const workerNameInput = document.getElementById('workerName');
-const addWorkerBtn = document.getElementById('addWorkerBtn');
-const workerSelect = document.getElementById('workerSelect');
-const saveWorkerBtn = document.getElementById('saveWorkerBtn');
-const deleteWorkerBtn = document.getElementById('deleteWorkerBtn');
-
-// All workers data
-let workers = loadWorkersDataFromLocal();
-
-// --- Worker Template ---
-function defaultWorker(name) {
-  const workerObj = { name, skills: {} };
-  AREAS.forEach(area => {
-    workerObj.skills[area.name] = {};
-    area.skills.forEach(skill => {
-      workerObj.skills[area.name][skill] = 0;
-    });
-  });
-  return workerObj;
-}
-
-// --- RENDER ALL TABLES ---
-function renderSkillTables() {
-  AREAS.forEach(area => {
-    const tbody = document.getElementById(area.tableBodyId);
-    tbody.innerHTML = '';
-    workers.forEach((worker, wIdx) => {
-      const tr = document.createElement('tr');
-      // Worker Name
-      const tdName = document.createElement('td');
-      tdName.textContent = worker.name || `Worker ${wIdx+1}`;
-      tr.appendChild(tdName);
-
-      // Skills
-      area.skills.forEach(skill => {
-        const tdSkill = document.createElement('td');
-        const inp = document.createElement('input');
-        inp.type = 'number';
-        inp.min = 0;
-        inp.max = 10;
-        inp.value = worker.skills[area.name][skill];
-        inp.className = 'skill-input';
-        inp.dataset.workerIdx = wIdx;
-        inp.dataset.area = area.name;
-        inp.dataset.skill = skill;
-
-        colorSkillCell(inp, inp.value);
-
-        // Input: When change, update in workers array
-        inp.addEventListener('input', function () {
-          let val = parseInt(this.value, 10);
-          if (isNaN(val)) val = 0;
-          if (val < 0) val = 0;
-          if (val > 10) val = 10;
-          workers[wIdx].skills[area.name][skill] = val;
-          colorSkillCell(this, val);
-          saveWorkersDataToLocal(workers);
-        });
-
-        tdSkill.appendChild(inp);
-        tr.appendChild(tdSkill);
-      });
-
-      tbody.appendChild(tr);
-    });
-  });
-}
-
-// --- Helper for coloring skill cells ---
-function colorSkillCell(input, val) {
-  input.classList.remove('low', 'medium', 'high');
-  val = parseInt(val, 10);
-  if (val >= 0 && val <= 4) input.classList.add('low');
-  if (val >= 5 && val <= 8) input.classList.add('medium');
-  if (val >= 9 && val <= 10) input.classList.add('high');
-}
-
-// --- RENDER WORKER SELECT Dropdown ---
-function renderWorkerDropdown() {
-  workerSelect.innerHTML = `<option value="">-- Select Worker to Edit --</option>`;
-  workers.forEach((worker, i) => {
-    workerSelect.innerHTML += `<option value="${i}">${worker.name || `Worker ${i+1}`}</option>`;
-  });
-}
-
-// --- Add Worker ---
-addWorkerBtn.onclick = () => {
-  const name = workerNameInput.value.trim();
-  if (workers.length >= MAX_WORKERS) {
-    alert('Max 15 workers allowed!');
-    return;
-  }
-  if (!name) {
-    alert('Please enter worker name!');
-    return;
-  }
-  workers.push(defaultWorker(name));
-  saveWorkersDataToLocal(workers);
-  workerNameInput.value = '';
-  renderSkillTables();
-  renderWorkerDropdown();
-};
-
-// --- Save Edited Worker Name ---
-saveWorkerBtn.onclick = () => {
-  const wIdx = parseInt(workerSelect.value, 10);
-  if (isNaN(wIdx) || wIdx < 0 || wIdx >= workers.length) {
-    alert('Choose a worker to edit');
-    return;
-  }
-  const newName = workerNameInput.value.trim();
-  if (!newName) {
-    alert('Worker name cannot be empty!');
-    return;
-  }
-  workers[wIdx].name = newName;
-  saveWorkersDataToLocal(workers);
-  renderSkillTables();
-  renderWorkerDropdown();
-};
-
-// --- Select Worker to Edit (fills name input for easy editing) ---
-workerSelect.onchange = function () {
-  const wIdx = parseInt(this.value, 10);
-  if (isNaN(wIdx) || wIdx < 0 || wIdx >= workers.length) {
-    workerNameInput.value = '';
-    return;
-  }
-  workerNameInput.value = workers[wIdx].name;
-};
-
-// --- Delete Worker ---
-deleteWorkerBtn.onclick = () => {
-  const wIdx = parseInt(workerSelect.value, 10);
-  if (isNaN(wIdx) || wIdx < 0 || wIdx >= workers.length) {
-    alert('Select a worker to delete');
-    return;
-  }
-  if (!confirm(`Delete worker "${workers[wIdx].name}"?`)) return;
-  workers.splice(wIdx, 1);
-  workerNameInput.value = '';
-  saveWorkersDataToLocal(workers);
-  renderSkillTables();
-  renderWorkerDropdown();
-};
-
-// --- INIT on page load ---
-renderSkillTables();
-renderWorkerDropdown();
-
-// ------- LOGIN/LOGOUT Logic (copy this into your JS file) -------
-
-// [Update these lines with your actual protected controls/buttons/inputs]
-const protectedControls = [
-  workerNameInput, addWorkerBtn, workerSelect, saveWorkerBtn, deleteWorkerBtn
-];
-
-// Params
-const ACCEPTED_USERS = [
-  { user: "CF9512", pass: "test2025" }
-];
-const REMEMBER_ME_KEY = "demoUserRememberMe";
-const AUTO_LOGOUT_INTERVAL = 3 * 60 * 1000; // 3 minutes
-
-// Elements
-const loginBtn     = document.getElementById('loginBtn');     // your login button
-const loginStatus  = document.getElementById('loginStatus');  // your login status div
-const modalBg      = document.getElementById('editor-login-modal');
-const modalForm    = document.getElementById('editor-login-form');
-const modalUser    = document.getElementById('editor-login-user');
-const modalPass    = document.getElementById('editor-login-pass');
-const togglePassIcon = document.getElementById('togglePass');
-const rememberMeCheckbox = document.getElementById('rememberMe');
-const forgotPassLink    = document.getElementById('forgotPass');
-const modalError   = document.getElementById('editor-login-error');
-const modalClose   = document.getElementById('editor-login-close');
-
-// State
-let isEditorMode = false;
-let autoLogoutTimer = null;
-
-// --- Show/Hide modal ---
-function showLoginModal() {
-  modalBg.style.display="flex";
-  let rememberedUser = localStorage.getItem(REMEMBER_ME_KEY) || "";
-  modalUser.value = rememberedUser;
-  rememberMeCheckbox.checked = !!rememberedUser;
-  modalPass.value = "";
-  modalError.textContent = "";
-  setTimeout(() => (rememberedUser ? modalPass : modalUser).focus(), 100);
-}
-function hideLoginModal() { modalBg.style.display = "none"; }
-
-function applyEditorMode(enabled, username="") {
-  protectedControls.forEach(el => {
-    if(el) el.disabled = !enabled;
-    if(el && (el.tagName==="INPUT"||el.tagName==="SELECT")) {
-      el.style.opacity = enabled ? "1" : "0.65";
-    }
-  });
-  loginBtn.style.display = enabled ? "none":"inline-block";
-  loginStatus.innerHTML = enabled ? (
-    `Welcome, <b>${username}</b>! <a href="#" id="logoutLink" style="color:#d13257;text-decoration:underline;margin-left:17px;">Logout</a>`
-  ) : "";
-  if(enabled) {
-    setTimeout(() => {
-      const logoutLink = document.getElementById("logoutLink");
-      if (logoutLink) logoutLink.onclick=function(e){e.preventDefault();logout();};
-    }, 120);
-  }
-}
-
-function logout(forced=false) {
-  isEditorMode = false;
-  stopAutoLogout();
-  applyEditorMode(false, "");
-  if(!rememberMeCheckbox.checked) localStorage.removeItem(REMEMBER_ME_KEY);
-  if(forced) alert("Logged out due to inactivity (3 minutes).");
-}
-
-// Button Events
-if(loginBtn) loginBtn.onclick = ()=>showLoginModal();
-protectedControls.forEach(function(el) {
-  if(el) ["click", "focus"].forEach(function(evtType){
-    el.addEventListener(evtType, function(event){
-      if(!isEditorMode){
-        event.preventDefault();
-        event.stopPropagation();
-        showLoginModal();
-        return false;
-      }
-    }, true);
-  });
-});
-modalForm.onsubmit = function(e) {
-  e.preventDefault();
-  const username = modalUser.value.trim();
-  const password = modalPass.value.trim();
-  const found = ACCEPTED_USERS.find(u => u.user === username && u.pass === password);
-  if (found) {
-    isEditorMode = true;
-    hideLoginModal();
-    applyEditorMode(true, username);
-    resetAutoLogout();
-    if(rememberMeCheckbox.checked) {
-      localStorage.setItem(REMEMBER_ME_KEY, username);
-    } else {
-      localStorage.removeItem(REMEMBER_ME_KEY);
-    }
+// --- AUTH STATE CHANGES ---
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    currentUserInfo.textContent = user.displayName || user.email;
+    userPhoto.src = user.photoURL;
+    userPhoto.classList.remove("hide");
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "";
+    checkAdmin(user.email);
   } else {
-    modalError.textContent = "Error!User not found⛔ Access Denied!";
-    modalPass.value = "";
-    setTimeout(()=>modalUser.focus(),50);
+    // Logged out
+    currentUser = null;
+    currentUserInfo.textContent = "";
+    userPhoto.classList.add("hide");
+    loginBtn.style.display = "";
+    logoutBtn.style.display = "none";
+    showUI(false, false);
   }
-};
-modalClose.onclick = hideLoginModal;
-window.addEventListener("keydown", function(e){
-  if(e.key==="Escape"){ hideLoginModal(); }
 });
-// Hide/Show password
-togglePassIcon.onclick = function() {
-  const isPass = modalPass.getAttribute('type')==='password';
-  modalPass.setAttribute('type', isPass ? 'text' : 'password');
-  togglePassIcon.textContent = isPass ? "hide" :"show";
-};
-// Forgot password
-forgotPassLink.onclick = function(e){
-  e.preventDefault();
-  let un = modalUser.value.trim();
-  let mailto = 
-      "mailto:ratulhasan2a@gmail.com?subject=Password%20Reset%20Request"
-      +"&body="
-      +encodeURIComponent(
-          "Hello,\n\nI forgot my password for the username: "
-          +(un || "[username]")
-          +"\n\nPlease assist. Thanks!"
-      );
-  window.location.href = mailto;
-};
-// --- AUTO LOGOUT
-function resetAutoLogout(){
-  stopAutoLogout();
-  if(isEditorMode){
-    autoLogoutTimer = setTimeout(()=>logout(true), AUTO_LOGOUT_INTERVAL);
+
+// --- LOGIN/LOGOUT BUTTONS ---
+loginBtn.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    alert("Login failed: " + e.message);
+  }
+});
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+// --- ADMIN CHECK ---
+function checkAdmin(email) {
+  // (We can fetch from Firebase later if needed)
+  isAdmin = ADMIN_EMAILS.map(e=>e.toLowerCase()).includes(email.toLowerCase());
+  showUI(true, isAdmin);
+}
+
+// --- SHOW/HIDE UI BASED ON AUTH & ADMIN ---
+function showUI(loggedIn, admin) {
+  if (loggedIn && admin) {
+    adminLoginPanel.classList.add("hide");
+    workerMgmt.classList.remove("hide");
+    skillsSection.classList.remove("hide");
+  } else if (loggedIn && !admin) {
+    adminLoginPanel.classList.add("hide");
+    workerMgmt.classList.add("hide");
+    skillsSection.classList.remove("hide");
+  } else {
+    adminLoginPanel.classList.add("hide");
+    workerMgmt.classList.add("hide");
+    skillsSection.classList.add("hide");
   }
 }
-function stopAutoLogout(){
-  if(autoLogoutTimer) clearTimeout(autoLogoutTimer);
+
+// --- ELEMENTS ---
+const addWorkerForm = document.getElementById("addWorkerForm");
+const workerNameInput = document.getElementById("workerNameInput");
+const workersList = document.getElementById("workersList");
+const skillsTableContainer = document.getElementById("skillsTableContainer");
+
+const SKILLS = [
+  "Welding", "Machining", "Assembly", "Quality Control", "Repair"
+]; // Add or edit skills as needed
+
+// --- WORKER CRUD (Admins only) ---
+// Add worker
+if (addWorkerForm) {
+  addWorkerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!isAdmin) return alert("Only admins can add workers.");
+    const name = workerNameInput.value.trim();
+    if (!name) return;
+    const workerId = name.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now();
+    await set(ref(db, 'workers/' + workerId), {
+      name,
+      createdBy: currentUser.email,
+      createdAt: Date.now(),
+    });
+    // Initialize skills for new worker
+    for (let skill of SKILLS) {
+      set(ref(db, `skills/${workerId}/${skill}`), 0);
+    }
+    workerNameInput.value = '';
+  });
 }
-["mousemove","keydown","mousedown","touchstart"].forEach(evt=>{
-  document.addEventListener(evt, function(){
-    if(isEditorMode) resetAutoLogout();
-  }, {passive:true});
-});
-// --- Init: lock editing
-applyEditorMode(false);
+
+// Delete worker
+async function deleteWorker(workerId) {
+  if (!isAdmin) return;
+  if (confirm("Remove this worker and their skills?")) {
+    await set(ref(db, 'workers/' + workerId), null);
+    await set(ref(db, 'skills/' + workerId), null);
+  }
+}
+
+// --- DISPLAY WORKERS LIST + LISTEN FOR LIVE CHANGES ---
+onValue(ref(db, 'workers'), (snap) => {
+  const workers = snap.val() || {};
+  workersList.innerHTML = '';
+  Object.entries(workers).forEach(([id, w]) => {
+    let li = document.createElement('li');
+    li.innerHTML = `
+      <span><i class="fa fa-user"></i> ${w.name}</span>
+      ${isAdmin ? `<button class="fancy-btn" title="Remove" onclick="window.__delWorker('${id}')"><i class="fa fa-trash"></i></button>` : ''}
+    `;
+    workersList.appendChild(li);
+  });
+  window.__delWorker = deleteWorker; // for button onclick
+  renderSkillsTable(workers);
+}, {onlyOnce: false}); // live subscription
+
+// --- DISPLAY SKILLS TABLE (LIVE) ---
+function renderSkillsTable(workers) {
+  // First, get latest skills mapping for all workers
+  get(ref(db, 'skills')).then(snap => {
+    const allSkills = snap.val() || {};
+    // Header row
+    let html = `<table border="0" style="width:100%;border-collapse:collapse;"><thead><tr>
+      <th>Worker</th>${SKILLS.map(s=>`<th>${s}</th>`).join('')}
+    </tr></thead><tbody>`;
+    for (const [wid, w] of Object.entries(workers||{})) {
+      html += `<tr><td>${w.name}</td>`;
+      for (const skill of SKILLS) {
+        const level = allSkills[wid]?.[skill] ?? 0;
+        html += `<td>${editableSkillCell(wid, skill, level)}</td>`;
+      }
+      html += `</tr>`;
+    }
+    html += `</tbody></table>`;
+    skillsTableContainer.innerHTML = html;
+    activateSkillCellEditing();
+  });
+}
+
+// --- EDITABLE CELLS (Admins and regulars can both edit their own skills) ---
+function editableSkillCell(wid, skill, lvl) {
+  // Show 0-3 as a reactively color-coded editable cell if admin OR user's own row
+  let classes = "level-cell ";
+  if (lvl >= 2) classes += "level-high";
+  else if (lvl == 1) classes += "level-medium";
+  else classes += "level-low";
+  const readonly = !isAdmin && (!currentUser||currentUser.email!==workersList.querySelector(`li span:contains(${skill})`)?.parentNode.getAttribute('data-id')); // let admin or self edit
+  return `<input type="number" min="0" max="3" value="${lvl}" data-worker="${wid}" data-skill="${skill}" class="${classes}" style="width:42px" ${readonly ? "readonly" : ""}/>`;
+}
+
+// --- Activate editing of skill cells ---
+function activateSkillCellEditing() {
+  skillsTableContainer.querySelectorAll('input[type=number]').forEach(input => {
+    input.addEventListener("change", async (e) => {
+      let wid = input.dataset.worker, skill = input.dataset.skill;
+      let val = Math.max(0, Math.min(3, Number(input.value)||0));
+      if (!isAdmin) return; // (optional: allow user to edit their own row)
+      await set(ref(db, `skills/${wid}/${skill}`), val);
+      input.classList.add("animate__flash");
+      setTimeout(() => input.classList.remove("animate__flash"), 700);
+    });
+  });
+}
