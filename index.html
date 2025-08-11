@@ -1,179 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>  
-  <meta charset="UTF-8">
-  <title>Advanced Workers Skill Sheet</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Add these Firebase scripts: -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<head>
+  <meta charset="UTF-8"/>
+  <title>KMF Workers Skills</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- FontAwesome for pretty icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Animate.css for slick transitions -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- Your page UI here -->
-  
-  <!-- Load your app logic after Firebase scripts -->
-
-
-
-    <div id="topbar" style="position:fixed;top:16px;right:32px;z-index:12000;">
-  <button id="loginBtn" style="background:linear-gradient(90deg,#497dfb 1%,#b583fd 98%);color:#fff;border:none;padding:7px 17px;border-radius:7px;font-weight:600;font-size:1em;cursor:pointer;box-shadow:0 1px 4px #7772;">Login</button>
-  <span id="loginStatus" style="margin-left:12px;color:#25256b;font-weight:600;"></span>
-</div>
-
-  <div class="container">
-    <h1>Kashor Multiflex Facility<br>Workers Skill Management</h1>
-
-    <div class="worker-input-section">
-      <h2>Worker Information</h2>
-      <label for="workerName">Worker Name:</label>
-      <input type="text" id="workerName" placeholder="Enter Worker Name">
-      <button id="addWorkerBtn">Add Worker</button>
-      <select id="workerSelect">
-        <option value="">-- Select Worker to Edit --</option>
-      </select>
-      <button id="saveWorkerBtn">Save Worker</button>
-      <button id="deleteWorkerBtn">Delete Worker</button>
+  <header>
+    <h1 class="smart-head"><i class="fa fa-cubes"></i> KMF Workers Skills</h1>
+    <div class="userbar">
+      <img id="userPhoto" class="hide" width="32"/>
+      <span id="currentUserInfo"></span>
+      <button id="loginBtn"><i class="fa fa-google"></i> Sign in</button>
+      <button id="logoutBtn" style="display:none;"><i class="fa fa-sign-out"></i> Logout</button>
     </div>
-
-    <hr class="section-divider">
-
-    <!-- DPI Area -->
-    <div class="area-section" id="area-dpi">
-      <h2>1. DPI Area</h2>
-      <h3>Machines</h3>
-      <ul>
-        <li>Universal Granulation Machine</li>
-        <li>Capsule Filling Machine</li>
-        <li>Capsule Blister Machine</li>
-      </ul>
-      <h3>Documents</h3>
-      <ul>
-        <li>BPR</li>
-        <li>BMR</li>
-      </ul>
-      <div class="skills-table-wrapper">
-        <h3>DPI Skills</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Worker</th>
-              <th>Universal Granulation Machine</th>
-              <th>Capsule Filling Machine</th>
-              <th>Capsule Blister Machine</th>
-              <th>BPR</th>
-              <th>BMR</th>
-            </tr>
-          </thead>
-          <tbody id="dpi-skills-body">
-            <!-- Worker skills will be added here by JavaScript -->
-          </tbody>
-        </table>
-      </div>
+  </header>
+  <main>
+    <!-- Admin login panel -->
+    <div id="adminLoginPanel" class="card hide animate__animated animate__fadeIn">
+      <h3><i class="fa fa-user-shield"></i> Admin Access</h3>
+      <input id="adminEmail" placeholder="Admin Email" autocomplete="off"/>
+      <input id="adminPass" type="password" placeholder="Admin passcode"/>
+      <button id="adminLoginBtn" class="fancy-btn">Add as Admin</button>
+      <div id="adminLoginMsg"></div>
     </div>
-
-    <hr class="section-divider">
-
-    <!-- MDI Area -->
-    <div class="area-section" id="area-mdi">
-      <h2>2. MDI Area</h2>
-      <h3>Machines</h3>
-      <ul>
-        <li>30L Vessel</li>
-        <li>100L Vessel</li>
-        <li>Canister Cleaning Machine</li>
-        <li>Canister Crimping Machine</li>
-        <li>Canister Filling Machine</li>
-      </ul>
-      <h3>Documents</h3>
-      <ul>
-        <li>BMR</li>
-        <li>Dispensing</li> <!-- Added Dispensing as per your list -->
-      </ul>
-      <div class="skills-table-wrapper">
-        <h3>MDI Skills</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Worker</th>
-              <th>30L Vessel</th>
-              <th>100L Vessel</th>
-              <th>Canister Cleaning Machine</th>
-              <th>Canister Crimping Machine</th>
-              <th>Canister Filling Machine</th>
-              <th>BMR</th>
-              <th>Dispensing</th>
-            </tr>
-          </thead>
-          <tbody id="mdi-skills-body">
-            <!-- Worker skills will be added here by JavaScript -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <!-- Packaging Area -->
-    <div class="area-section" id="area-packaging">
-      <h2>3. Packaging Area</h2>
-      <h3>Machines</h3>
-      <ul>
-        <li>Conveyor Belt</li>
-        <li>Sachet Sealing Machine</li>
-        <li>Balance</li>
-      </ul>
-      <h3>Documents</h3>
-      <ul>
-        <li>BPR</li>
-      </ul>
-      <div class="skills-table-wrapper">
-        <h3>Packaging Skills</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Worker</th>
-              <th>Conveyor Belt</th>
-              <th>Sachet Sealing Machine</th>
-              <th>Balance</th>
-              <th>BPR</th>
-            </tr>
-          </thead>
-          <tbody id="packaging-skills-body">
-            <!-- Worker skills will be added here by JavaScript -->
-            
-          </tbody>
-        </table>
-      </div>
-    </div>
-<!-- LOGIN MODAL - copy this into your HTML -->
-<div id="editor-login-modal" style="display:none; position:fixed; inset:0; background:rgba(28,36,74,0.16); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#e7ecfa; border-radius:15px; box-shadow:0 6px 40px #4446ab30; padding:32px 28px; min-width:300px; max-width:90vw; position:relative;">
-    <h3 style="text-align:center; color:#2634ff; margin-bottom:18px; font-weight:600;"> User Login </h3>
-    <form id="editor-login-form" autocomplete="off" style="display:flex;flex-direction:column;gap:12px;">
-      <input type="text" id="editor-login-user" placeholder="Username" autocomplete="username">
-      <div style="position:relative;">
-        <input type="password" id="editor-login-pass" placeholder="Password" autocomplete="current-password" style="padding-right:36px;">
-        <span id="togglePass" title="Show/Hide password" style="position:absolute;right:8px;top:7px;cursor:pointer;font-size:1.2em;">show</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; font-size:.97em; margin-top:-7px;">
-        <label>
-          <input type="checkbox" id="rememberMe" style="margin-right:3px;">
-          Remember me
-        </label>
-        <a href="#" id="forgotPass" style="color:#d13257; text-decoration:none;">Forgot password?</a>
-      </div>
-      <button type="submit" id="editor-login-btn" style="background:linear-gradient(90deg,#497dfb 1%,#b583fd 98%); color:#fff; border:none; padding:8px 0px; border-radius:7px; font-size:1em; font-weight:600; cursor:pointer;">
-        Login
-      </button>
-      <div id="editor-login-error" style="color:#ee3040; font-size:.98em; height:20px; text-align:center; font-weight:600;"></div>
-    </form>
-    <button id="editor-login-close" style="position:absolute;top:8px;right:13px;background:transparent;color:#3e3e85;font-size:2.2em;border:none;cursor:pointer;font-weight:bold;">&times;</button>
-  </div>
-</div>
-
-  </div> <!-- End .container -->
-
-  <script src="script.js"></script>
-    <script src="app.js"></script></head>
+    <!-- Worker management -->
+    <section id="workerMgmt" class="card hide animate__animated animate__fadeIn">
+      <h3><i class="fa fa-users"></i> Workers</h3>
+      <form id="addWorkerForm">
+        <input id="workerNameInput" required maxlength="25" placeholder="Worker name"/>
+        <button type="submit" class="fancy-btn"><i class="fa fa-plus"></i> Add Worker</button>
+      </form>
+      <ul id="workersList"></ul>
+    </section>
+    <!-- Skills matrix -->
+    <section id="skillsSection" class="hide animate__animated animate__fadeIn">
+      <h3><i class="fa fa-table"></i> Skills Matrix</h3>
+      <div id="skillsTableContainer"></div>
+    </section>
+  </main>
+  <div id="modalBg" class="hide"><div id="modalBox" class="animate__animated"></div></div>
+  <!-- Firebase/logic scripts -->
+  <script type="module" src="firebase-init.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
