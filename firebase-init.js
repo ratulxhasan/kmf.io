@@ -2,7 +2,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-
+databaseURL: "https://kmfworkers-default-rtdb.firebaseio.com",
+  
 // Your config
 const firebaseConfig = {
   apiKey: "AIzaSyDOpfGcOaV6SE3Z6hGrB8k_BNKcII6Psyg",
