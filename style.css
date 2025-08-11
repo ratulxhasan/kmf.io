@@ -1,127 +1,354 @@
+/* Digital Font and Global Styles */
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(90deg, #f3f7ff, #f8e9ff 60%, #e7f0ff 100%);
-  margin: 0;
-  min-height: 100vh;
+    background: linear-gradient(135deg, #10142b 0%, #263558 100%);
+    font-family: 'Orbitron', Arial, sans-serif;
+    color: #e2eafc;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 header {
-  background: #347cfb;
-  color: #fff;
-  padding: 1.5em 1.2em;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(24, 32, 61, 0.9);
+    padding: 20px 32px;
+    box-shadow: 0 2px 10px #334d7c44;
+    position: sticky;
+    top: 0;
 }
 
-.smart-head { display: flex; align-items: center; gap: 10px; letter-spacing: 0.04em;}
-
-.userbar { display: flex; align-items: center; gap: 8px; font-size: 1.12em; }
-
-.fancy-btn {
-  background: linear-gradient(90deg, #347cfb 30%, #e939c7 95%);
-  color: #fff;
-  border-radius: 2em;
-  border: 0;
-  box-shadow: 0 2px 18px #e939c722;
-  padding: .45em 1.5em;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1em;
-  margin-left: 5px;
-  transition: background 0.13s, transform 0.11s;
-}
-.fancy-btn:hover { background: linear-gradient(90deg, #e939c7 25%, #347cfb 98%); transform: scale(1.04);}
-
-.card {
-  margin: 2em auto;
-  background: #fff;
-  border-radius: 19px;
-  padding: 2em;
-  box-shadow: 0 2px 18px #347cfb22;
-  max-width: 470px;
+header h1 {
+    letter-spacing: 3px;
+    font-size: 2rem;
+    color: #32fa79;
+    text-transform: uppercase;
+    margin: 0;
+    animation: neonGlow 1.2s infinite alternate;
 }
 
-section.card {
-  max-width: 850px;
+@keyframes neonGlow {
+    to { text-shadow: 0 0 10px #32fa79, 0 0 20px #32fa7977; }
 }
 
-.hide { display: none !important; }
-
-ul#workersList {
-  list-style: none;
-  padding: 0;
-  margin-top: 1em;
+#user-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-ul#workersList li {
-  padding: 0.5em 1em;
-  margin-bottom: 0.6em;
-  background: #f4f7ff;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  font-weight: 500;
-  box-shadow: 0 2px 8px #347cfb18;
-  animation: fadeInLeft 0.7s;
+#login-btn, #logout-btn {
+    background: linear-gradient(90deg, #1f9cf7 20%, #32fa79 80%);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #1f9cf799;
+    transition: scale 0.18s;
 }
 
-@keyframes fadeInLeft {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; }
+#login-btn:hover, #logout-btn:hover {
+    scale: 1.12;
+    box-shadow: 0 0 14px #32fa7970;
 }
 
-.level-cell {
-  display: inline-block; min-width: 50px;
-  text-align: center;
-  padding: 0.45em 0.25em;
-  border-radius: 6px;
-  transition: background 0.23s, border-color 0.19s, box-shadow 0.11s;
-  border: 2px solid transparent;
-  font-weight: 450;
-  font-size: 1.12em;
-}
-.level-cell:focus {
-  box-shadow: 0 0 8px #e939c7aa, 0 3px 16px #347cfb33;
-  border-color: #e939c7;
-  outline: none;
-}
-.level-high { background: #c3edff; color: #22568f; font-weight: 600; }
-.level-medium { background: #ffe1f5; color: #ac2d80; }
-.level-low { background: #fff6d2; color: #c59624; }
-
-#skillsTableContainer {
-  overflow-x: auto;
-  margin: 1.1em 0;
-  background: #f8f5ff;
-  border-radius: 13px;
-  padding: 1em;
-  box-shadow: 0 2px 8px #347cfb11;
-  min-width: 320px;
+#user-info {
+    font-size: 1rem;
+    color: #32fa79;
 }
 
-input, button {
-  font-size: 1.02em;
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#modalBg {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: #0006; z-index: 20;
-  display: flex; justify-content: center; align-items: center;
+/* Skill Tables */
+#areas-container {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    margin: 35px auto;
+    justify-content: center;
 }
 
-#modalBox {
-  min-width: 300px; max-width: 95vw;
-  background: #fff;
-  border-radius: 22px;
-  padding: 2em 2.1em;
-  box-shadow: 0 2px 24px #347cfb14;
-  font-size: 1.16em;
-  animation-duration: .5s;
+.area-block {
+    background: rgba(26, 38, 58, 0.96);
+    border-radius: 20px;
+    box-shadow: 0 0 30px #1f9cf755;
+    padding: 22px 22px 16px 22px;
+    min-width: 340px;
+    transition: box-shadow 0.3s;
+    animation: blockFadeIn 0.9s;
 }
 
-@media (max-width: 700px) {
-  header { flex-direction: column; align-items: flex-start; padding:1em 0.7em; }
-  .card { padding:1.1em; }
+@keyframes blockFadeIn {
+    from { opacity: 0; transform: scale(0.9);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+.area-block h2 {
+    color: #1f9cf7;
+    font-size: 1.3rem;
+    text-align: left;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    font-size: 0.98rem;
+    background: #131d31ee;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 0 0 12px #32fa7920;
+}
+
+.matrix-table th, .matrix-table td {
+    border: 1px solid #374e71aa;
+    padding: 7px 4px;
+    text-align: center;
+}
+
+.matrix-table th {
+    background: linear-gradient(90deg, #1f9cf7 10%, #32fa79 90%);
+    color: #111c23;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 1rem;
+}
+
+.matrix-table td.worker-name {
+    font-weight: 600;
+    cursor: pointer;
+    color: #1f9cf7;
+    transition: background 0.2s;
+}
+
+.matrix-table td.worker-name:hover {
+    background: #2287e899;
+}
+
+
+
+/* Skill Level Cell Coloring */
+.skill-level-cell {
+    font-weight: bold;
+    border-radius: 8px;
+    transition: box-shadow 0.20s, background 0.2s;
+    cursor: pointer;
+    box-shadow: 0 0 7px #111c2340;
+}
+
+/* Low Skill: Red */
+.skill-low {
+    background: linear-gradient(90deg, #ff3333 40%, #892a2a 90%);
+    color: #fff;
+}
+
+/* Medium Skill: Yellow */
+.skill-medium {
+    background: linear-gradient(90deg, #ffe377 40%, #dbc344 90%);
+    color: #2c2c13;
+}
+
+/* High Skill: Green/Teal */
+.skill-high {
+    background: linear-gradient(90deg, #56fa9c 50%, #087c52 100%);
+    color: #011b10;
+}
+
+/* Animation for focus */
+.skill-level-cell:focus {
+    outline: 2px solid #efd234;
+    box-shadow: 0 0 13px #fecf22bb;
+}
+
+.skill-level-cell:active {
+    scale: 1.05;
+}
+
+/* Modal for Editing Worker Name */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0; top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(12,24,32,0.76);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+    animation: modalIn 0.4s;
+}
+
+@keyframes modalIn {
+    from { opacity: 0;}
+    to { opacity: 1;}
+}
+
+.modal-content {
+    background: #232b49;
+    color: #eee;
+    padding: 28px 38px 18px 38px;
+    border-radius: 22px;
+    box-shadow: 0 0 22px #1f9cf7dd;
+    min-width: 270px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalContentIn 0.55s;
+}
+
+@keyframes modalContentIn {
+    from { transform: translateY(-20px);}
+    to { transform: translateY(0);}
+}
+
+#edit-name-input {
+    padding: 8px;
+    font-size: 1.15rem;
+    border: 2px solid #1f9cf7;
+    border-radius: 7px;
+    outline: none;
+    margin-bottom: 12px;
+    background: #0c162cd0;
+    color: #abfccb;
+    width: 95%;
+}
+
+#save-name-btn, #cancel-name-btn {
+    background: linear-gradient(90deg, #32fa79 30%, #32fa7920 100%);
+    color: #10142b;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 26px;
+    margin: 3px 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 8px #32fa7940;
+    transition: background 0.18s, color 0.13s;
+}
+
+#save-name-btn:hover, #cancel-name-btn:hover {
+    background: linear-gradient(90deg, #1f9cf7 40%, #32fa79 80%);
+    color: #fff;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+    #areas-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .area-block {
+        margin-bottom: 24px;
+        min-width: min(100vw, 340px);
+        width: 96vw;
+    }
+}
+/* Login Modal */
+#login-modal.modal {
+    display: none;
+    position: fixed;
+    z-index: 99;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(12,24,32,0.83);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+    animation: modalIn 0.4s;
+}
+
+#login-modal .modal-content {
+    background: #1a1e2f;
+    color: #fafbfc;
+    padding: 36px 42px 22px 42px;
+    border-radius: 24px;
+    box-shadow: 0 0 24px #1f9cf7cc;
+    min-width: 290px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalContentIn 0.55s;
+}
+
+#login-modal label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 12px;
+    color: #32fa79;
+}
+
+#login-username, #login-password {
+    margin: 8px 0 12px 0;
+    width: 95%;
+    padding: 8px;
+    font-size: 1.07rem;
+    border: 2px solid #1f9cf7;
+    border-radius: 8px;
+    background: #132c48;
+    color: #e2eafc;
+    outline: none;
+    transition: border 0.2s;
+}
+
+#login-username:focus, #login-password:focus {
+    border: 2.5px solid #32fa79;
+}
+
+#login-error {
+    color: #ff3779;
+    font-weight: 700;
+    margin: 9px 0 9px 0;
+    min-height: 19px;
+    text-shadow: 0 0 4px #230d1b;
+    text-align: center;
+}
+
+#do-login-btn, #cancel-login-btn {
+    background: linear-gradient(90deg, #32fa79 30%, #1f9cf7 100%);
+    color: #172a38;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 26px;
+    margin: 4px 7px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 0 10px #32fa7940;
+    transition: background 0.19s, color 0.15s;
+}
+#do-login-btn:hover, #cancel-login-btn:hover {
+    background: linear-gradient(90deg, #1f9cf7 50%, #32fa79 80%);
+    color: #fafbfc;
+}
+#user-info {
+    font-size: 1rem;
+    color: #32fa79;
+    background: #111c2360;
+    padding: 7px 19px;
+    border-radius: 10px;
+    letter-spacing: 1.2px;
+}
+@media (max-width: 600px) {
+    #login-modal .modal-content {
+        min-width: 84vw;
+        padding: 16px 5vw;
+    }
+    #login-username, #login-password {
+        font-size: 1rem;
+    }
+}
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
 }
