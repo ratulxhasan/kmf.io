@@ -1,52 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title>KMF Workers Skills</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- FontAwesome for pretty icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <!-- Animate.css for slick transitions -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <title>K M F Workers Skills</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for digital look -->
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'PT Serif', serif; }
+    </style>
 </head>
 <body>
-  <header>
-    <h1 class="smart-head"><i class="fa fa-cubes"></i> KMF Workers Skills</h1>
-    <div class="userbar">
-      <img id="userPhoto" class="hide" width="32"/>
-      <span id="currentUserInfo"></span>
-      <button id="loginBtn"><i class="fa fa-google"></i> Sign in</button>
-      <button id="logoutBtn" style="display:none;"><i class="fa fa-sign-out"></i> Logout</button>
+    <header>
+        <h1>Kashor Multiflex Facility</h1>
+        <div id="user-controls">
+            <span id="user-info"></span>
+            <button id="login-btn">Login</button>
+            <button id="logout-btn" style="display:none;">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="areas-container">
+            <!-- Skill matrix tables will be dynamically injected here -->
+        </div>
+    </main>
+
+    <!-- Modal for editing worker names -->
+    <div id="edit-name-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>Edit Worker Name</h2>
+            <input type="text" id="edit-name-input">
+            <button id="save-name-btn">Save</button>
+            <button id="cancel-name-btn">Cancel</button>
+        </div>
     </div>
-  </header>
-  <main>
-    <!-- Admin login panel -->
-    <div id="adminLoginPanel" class="card hide animate__animated animate__fadeIn">
-      <h3><i class="fa fa-user-shield"></i> Admin Access</h3>
-      <input id="adminEmail" placeholder="Admin Email" autocomplete="off"/>
-      <input id="adminPass" type="password" placeholder="Admin passcode"/>
-      <button id="adminLoginBtn" class="fancy-btn">Add as Admin</button>
-      <div id="adminLoginMsg"></div>
+
+    <!-- Modal for username/password login -->
+    <div id="login-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <div class="input-group">
+                <label for="login-username">Username</label>
+                <input id="login-username" type="text" autocomplete="username" required>
+            </div>
+            <div class="input-group">
+                <label for="login-password">Password</label>
+                <input id="login-password" type="password" autocomplete="current-password" required>
+            </div>
+            <div id="login-error" class="error"></div>
+            <button id="do-login-btn">Login</button>
+            <button id="cancel-login-btn" style="margin-left:10px;">Cancel</button>
+        </div>
     </div>
-    <!-- Worker management -->
-    <section id="workerMgmt" class="card hide animate__animated animate__fadeIn">
-      <h3><i class="fa fa-users"></i> Workers</h3>
-      <form id="addWorkerForm">
-        <input id="workerNameInput" required maxlength="25" placeholder="Worker name"/>
-        <button type="submit" class="fancy-btn"><i class="fa fa-plus"></i> Add Worker</button>
-      </form>
-      <ul id="workersList"></ul>
-    </section>
-    <!-- Skills matrix -->
-    <section id="skillsSection" class="hide animate__animated animate__fadeIn">
-      <h3><i class="fa fa-table"></i> Skills Matrix</h3>
-      <div id="skillsTableContainer"></div>
-    </section>
-  </main>
-  <div id="modalBg" class="hide"><div id="modalBox" class="animate__animated"></div></div>
-  <!-- Firebase/logic scripts -->
-  <script type="module" src="firebase-init.js"></script>
-  <script type="module" src="script.js"></script>
+
+    <!-- Firebase App and modules -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyDOpfGcOaV6SE3Z6hGrB8k_BNKcII6Psyg",
+        authDomain: "kmfworkers.firebaseapp.com",
+        projectId: "kmfworkers",
+        storageBucket: "kmfworkers.firebasestorage.app",
+        messagingSenderId: "345856300895",
+        appId: "1:345856300895:web:c0b07b90b45f86989b88ea",
+        measurementId: "G-M35E3DJD9V"
+      };
+      const app = initializeApp(firebaseConfig);
+      window.app = app; // For script.js access
+    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
